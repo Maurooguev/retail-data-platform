@@ -1,0 +1,117 @@
+========================
+RETAIL DATA PLATFORM
+IMPORTANT COMMANDS
+========================
+
+
+-----------------------------------
+ACTIVATE PYTHON ENVIRONMENT
+-----------------------------------
+
+.\.venv\Scripts\Activate.ps1
+
+
+-----------------------------------
+START DOCKER CONTAINERS
+-----------------------------------
+
+docker compose up -d
+
+
+-----------------------------------
+STOP DOCKER CONTAINERS
+-----------------------------------
+
+docker compose down
+
+
+-----------------------------------
+CHECK RUNNING CONTAINERS
+-----------------------------------
+
+docker ps
+
+
+-----------------------------------
+ENTER POSTGRESQL
+-----------------------------------
+
+docker exec -it retail_postgres psql -U admin -d retail_db
+
+
+-----------------------------------
+EXIT POSTGRESQL
+-----------------------------------
+
+\q
+
+
+-----------------------------------
+CHECK TABLES
+-----------------------------------
+
+\dt
+
+
+-----------------------------------
+CHECK TOTAL SALES
+-----------------------------------
+
+SELECT COUNT(*) FROM sales;
+
+
+-----------------------------------
+CHECK PRODUCTS
+-----------------------------------
+
+SELECT * FROM products;
+
+
+-----------------------------------
+CHECK SALES
+-----------------------------------
+
+SELECT * FROM sales LIMIT 10;
+
+
+-----------------------------------
+RESET DATABASE
+-----------------------------------
+
+TRUNCATE TABLE sales, inventory, products, customers, warehouses RESTART IDENTITY CASCADE;
+
+
+-----------------------------------
+RUN FULL ETL PIPELINE
+-----------------------------------
+
+python scripts/generate_data.py
+
+
+-----------------------------------
+GENERATE NEW SALES BATCH
+-----------------------------------
+
+python scripts/generate_sales_batch.py
+
+
+-----------------------------------
+OPEN METABASE
+-----------------------------------
+
+http://localhost:3000
+
+
+-----------------------------------
+CHECK REVENUE BY PRODUCT
+-----------------------------------
+
+SELECT 
+    p.product_name,
+    SUM(s.quantity) AS total_units_sold,
+    SUM(s.total_amount) AS total_revenue
+FROM sales s
+JOIN products p 
+    ON s.product_id = p.product_id
+GROUP BY p.product_name
+ORDER BY total_revenue DESC;
